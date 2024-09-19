@@ -6,7 +6,10 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  DATABASE_URL: z.string(),
+  DATABASE_HOST: z.string(),
+  DATABASE_USER: z.string(),
+  DATABASE_PASSWORD: z.string(),
+  DATABASE_NAME: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

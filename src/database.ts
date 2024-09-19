@@ -4,9 +4,11 @@ import { ENV_DATA } from "./env";
 const connectionConfig: Knex.Config = {
   client: "pg",
   connection: {
-    filename: ENV_DATA.DATABASE_URL,
+    host: ENV_DATA.DATABASE_HOST,
+    user: ENV_DATA.DATABASE_USER,
+    password: ENV_DATA.DATABASE_PASSWORD,
+    database: ENV_DATA.DATABASE_NAME,
   },
-  useNullAsDefault: true,
   migrations: {
     extension: "ts",
     directory: "./database/migrations",
