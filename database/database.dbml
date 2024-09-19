@@ -1,0 +1,54 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id uuid [pk, default: `uuid_generate_v4()`]
+  name varchar(100) [not null]
+  email varchar(255) [not null, unique]
+  password_hash varchar(255) [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table groups {
+  id uuid [pk, default: `uuid_generate_v4()`]
+  name varchar(100) [unique, not null]
+  created_at datetime [default: `now()`]
+}
+
+Table user_groups {
+  id uuid [pk, increment]
+  user_id uuid [ref: > users.id, not null]
+  group_id uuid [ref: > groups.id, not null]
+}
+
+Table accounts {
+  id uuid [pk, default: `uuid_generate_v4()`]
+  user_id uuid [ref: > users.id, not null]
+  name varchar(100) [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table transactions_categories {
+  id uuid [pk, default: `uuid_generate_v4()`]
+  user_id uuid [ref: > users.id, not null]
+  name varchar(255) [not null]
+}
+
+Table transactions {
+  id uuid [pk, default: `uuid_generate_v4()`]
+  account_id uuid [ref: > accounts.id, not null]
+  group_id uuid [ref: > groups.id, null]
+  transaction_category_id uuid [ref: > transactions_categories.id, not null]
+  name varchar(255) [not null]
+  description text [null, note: 'Any observation about this transaction']
+  amount integer [not null, note: 'Amount in cents']
+  transaction_type transaction_type_enum [not null]
+  transaction_date timestamp
+  created_at timestamp [default: `now()`]
+}
+
+enum transaction_type_enum {
+  income
+  outcome
+}
+
