@@ -1,20 +1,19 @@
 import { compareSync, hashSync } from "bcrypt";
 
 export class Password {
-  private readonly _value: string;
+  #value: string;
 
   constructor(value: string) {
     try {
       const passwordHash = hashSync(value, 10);
 
-      this._value = passwordHash;
-      return new Password(passwordHash);
+      this.#value = passwordHash;
     } catch {
       throw new Error("Failed to hash password");
     }
   }
 
-  public static validate(value: string): string[] {
+  static validate(value: string): string[] {
     const errors: string[] = [];
 
     if (!value) {
@@ -27,10 +26,10 @@ export class Password {
   }
 
   get value(): string {
-    return this._value;
+    return this.#value;
   }
 
-  public compare(plainTextPassword: string): boolean {
-    return compareSync(plainTextPassword, this._value);
+  compare(plainTextPassword: string): boolean {
+    return compareSync(plainTextPassword, this.#value);
   }
 }

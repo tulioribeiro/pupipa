@@ -1,8 +1,12 @@
 export class Email {
-  constructor(private readonly _value: string) {}
+  readonly #value: string;
+
+  constructor(value: string) {
+    this.#value = value;
+  }
 
   get value(): string {
-    return this._value;
+    return this.#value;
   }
 
   static validate(value: string): string[] {
@@ -10,18 +14,18 @@ export class Email {
 
     if (!value) {
       errors.push("Email cannot be empty");
-    } else if (!Email.isValidEmail(value)) {
+    } else if (!this.#isValidEmail(value)) {
       errors.push("Invalid email format");
     }
 
     return errors;
   }
 
-  public static create(value: string): Email {
+  static create(value: string): Email {
     return new Email(value);
   }
 
-  private static isValidEmail(value: string): boolean {
+  static #isValidEmail(value: string): boolean {
     return /^([a-z0-9]+(?:[._-][a-z0-9]+)*)@([a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,})$/.test(
       value
     );

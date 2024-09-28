@@ -1,17 +1,22 @@
-import { UserRepository } from "../../../domain/repositorires/user";
+import { UserRepository } from "../../../domain/repositories/user";
 import { User } from "../../../domain/entities/user";
 
 export class InMemoryUserRepository implements UserRepository {
-  private users: Map<string, User> = new Map();
+  private users = new Map<string, User>();
 
   async findById(id: string): Promise<User | null> {
-    return this.users.get(id) || null;
+    const user = this.users.get(id);
+    if (user) {
+      await Promise.resolve(this.users.get(id));
+    }
+
+    return null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
     for (const user of this.users.values()) {
       if (user.email === email) {
-        return user;
+        await Promise.resolve(user);
       }
     }
 
@@ -19,14 +24,16 @@ export class InMemoryUserRepository implements UserRepository {
   }
 
   async save(user: User): Promise<void> {
-    this.users.set(user.id, user);
+    await Promise.resolve(this.users.set(user.id, user));
   }
 
   async delete(id: string): Promise<void> {
-    this.users.delete(id);
+    await Promise.resolve(this.users.delete(id));
   }
 
   async findAll(): Promise<User[]> {
-    return Array.from(this.users.values());
+    const users = await Promise.resolve(Array.from(this.users.values()));
+
+    return users;
   }
 }

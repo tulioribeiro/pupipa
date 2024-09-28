@@ -1,13 +1,13 @@
 type ValidatorFunction<T> = (value: T) => string[];
 
 export class Validator<T> {
-  private errorType: new (errors: Record<string, string[]>) => Error;
+  #errorType: new (errors: Record<string, string[]>) => Error;
 
   constructor(errorType: new (errors: Record<string, string[]>) => Error) {
-    this.errorType = errorType;
+    this.#errorType = errorType;
   }
 
-  public validate<K extends keyof T>(
+  validate<K extends keyof T>(
     props: Partial<T>,
     validators: Partial<Record<K, ValidatorFunction<T[K]>>>
   ): void {
@@ -26,18 +26,18 @@ export class Validator<T> {
     }
 
     if (Object.keys(errors).length > 0) {
-      throw new this.errorType(errors);
+      throw new this.#errorType(errors);
     }
   }
 
-  public validateSingle<K extends keyof T>(
+  validateSingle<K extends keyof T>(
     key: K,
     value: T[K],
     validate: ValidatorFunction<T[K]>
   ): void {
     const errors = validate(value);
     if (errors.length > 0) {
-      throw new this.errorType({ [key]: errors });
+      throw new this.#errorType({ [key]: errors });
     }
   }
 }

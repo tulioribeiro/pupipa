@@ -13,88 +13,91 @@ interface UserProps {
 }
 
 export class User extends BaseEntity {
-  private _name: Name;
-  private readonly _email: Email;
-  private _password: Password;
-  private _role: UserRole;
-  private _validatedEmail: boolean;
-  private _validator: Validator<UserProps> = new Validator(ValidationExecption);
-
+  #name: Name;
+  readonly #email: Email;
+  #password: Password;
+  #role: UserRole;
+  #validatedEmail: boolean;
+  #validator = new Validator<UserProps>(ValidationExecption);
   constructor(props: UserProps) {
     super();
 
-    this._validate(props);
+    this.#validate(props);
 
     const { name, email, password } = props;
 
-    this._name = new Name(name);
-    this._email = new Email(email);
-    this._password = new Password(password);
-    this._role = UserRole.User;
-    this._validatedEmail = false;
+    this.#name = new Name(name);
+    this.#email = new Email(email);
+    this.#password = new Password(password);
+    this.#role = UserRole.User;
+    this.#validatedEmail = false;
   }
 
   get name(): string {
-    return this._name.value;
+    return this.#name.value;
   }
 
   set name(name: string) {
-    this._name = this._validateAndCreateName(name);
+    this.#name = this.#validateAndCreateName(name);
   }
 
   get email(): string {
-    return this._email.value;
+    return this.#email.value;
   }
 
   get validatedEmail(): boolean {
-    return this._validatedEmail;
+    return this.#validatedEmail;
   }
 
   set validatedEmail(validated: boolean) {
-    this._validatedEmail = validated;
+    this.#validatedEmail = validated;
     this._updatedTimestamp();
   }
 
   set password(password: string) {
-    this._password = this._validateAndCreatePassword(password);
+    this.#password = this.#validateAndCreatePassword(password);
   }
 
   get role(): UserRole {
-    return this._role;
+    return this.#role;
   }
 
   set role(role: UserRole) {
-    this._role = role;
+    this.#role = role;
     this._updatedTimestamp();
   }
 
   public passwordMatches(password: string): boolean {
-    return this._password.compare(password);
+    return this.#password.compare(password);
   }
 
-  private _validateAndCreateName(name: string): Name {
+  #validateAndCreateName(name: string): Name {
     const newName = new Name(name);
 
-    this._validator.validateSingle("name", name, Name.validate);
+    this.#validator.validateSingle("name", name, Name.validate.bind(Name));
     this._updatedTimestamp();
 
     return newName;
   }
 
-  private _validateAndCreatePassword(password: string): Password {
+  #validateAndCreatePassword(password: string): Password {
     const newPassword = new Password(password);
 
-    this._validator.validateSingle("password", password, Password.validate);
+    this.#validator.validateSingle(
+      "password",
+      password,
+      Password.validate.bind(Password)
+    );
     this._updatedTimestamp();
 
     return newPassword;
   }
 
-  private _validate(props: UserProps): void {
-    this._validator.validate(props, {
-      name: Name.validate,
-      email: Email.validate,
-      password: Password.validate,
+  #validate(props: UserProps): void {
+    this.#validator.validate(props, {
+      name: Name.validate.bind(Name),
+      email: Email.validate.bind(Email),
+      password: Password.validate.bind(Password),
     });
   }
 }
