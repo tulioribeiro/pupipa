@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint",
-    "dev": "tsx watch src/server.ts",
-    "knex": "node --import tsx ./node_modules/.bin/knex"
+    "dev": "tsx watch src/presentation/app.ts",
+    "knex": "node --import tsx ./node_modules/.bin/knex --knexfile ./src/infrastructure/database/knexfile.ts",
+    "migrate:make": "npm run knex migrate:make"
   },
   "keywords": [],
   "author": "",

@@ -15,11 +15,11 @@ export class BaseEntity {
     return this.#id.value;
   }
 
-  protected get _createdAt(): Date {
+  get createdAt(): Date {
     return this.#createdAt;
   }
 
-  protected get _updatedAt(): Date | undefined {
+  get updatedAt(): Date | undefined {
     return this.#updatedAt;
   }
 
