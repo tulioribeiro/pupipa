@@ -23,8 +23,10 @@ export class InMemoryUserRepository implements UserRepository {
     return null;
   }
 
-  async save(user: User): Promise<void> {
-    await Promise.resolve(this.users.set(user.id, user));
+  async create(user: User): Promise<User> {
+    this.users.set(user.id, user);
+
+    return Promise.resolve(user);
   }
 
   async delete(id: string): Promise<void> {

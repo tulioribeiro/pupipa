@@ -1,9 +1,7 @@
-export class ValidationExecption extends Error {
-  public readonly errors: Record<string, string[]>;
+import { BaseException } from "./base";
 
+export class ValidationException extends BaseException {
   constructor(errors: Record<string, string[]>) {
-    super();
-    this.name = "ValidationException";
-    this.errors = errors;
+    super("Invalid input data.", errors);
   }
 }

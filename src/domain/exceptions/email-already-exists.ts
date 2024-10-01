@@ -1,6 +1,7 @@
-export class EmailAlreadyExistsException extends Error {
+import { ValidationException } from "./validation";
+
+export class EmailAlreadyExistsException extends ValidationException {
   constructor() {
-    super("A user with this already exists.");
-    this.name = "EmailAlreadyExistsException";
+    super({ email: ["Email already exists."] });
   }
 }

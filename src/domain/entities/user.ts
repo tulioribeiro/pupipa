@@ -2,14 +2,19 @@ import { BaseEntity } from "./base";
 import { Email } from "../value-objects/email";
 import { Name } from "../value-objects/name";
 import { Password } from "../value-objects/password";
-import { ValidationExecption } from "../exceptions/validation";
+import { ValidationException } from "../exceptions/validation";
 import { UserRole } from "../enums/role";
 import { Validator } from "../shared/utils/validator";
 
-interface UserProps {
+export interface UserData {
   name: string;
   email: string;
   password: string;
+  id?: string;
+  validatedEmail?: boolean;
+  role?: UserRole;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export class User extends BaseEntity {
@@ -18,8 +23,8 @@ export class User extends BaseEntity {
   #password: Password;
   #role: UserRole;
   #validatedEmail: boolean;
-  #validator = new Validator<UserProps>(ValidationExecption);
-  constructor(props: UserProps) {
+  #validator = new Validator<UserData>(ValidationException);
+  constructor(props: UserData) {
     super();
 
     this.#validate(props);
@@ -28,7 +33,7 @@ export class User extends BaseEntity {
 
     this.#name = new Name(name);
     this.#email = new Email(email);
-    this.#password = new Password(password);
+    this.#password = Password.create(password);
     this.#role = UserRole.User;
     this.#validatedEmail = false;
   }
@@ -58,6 +63,10 @@ export class User extends BaseEntity {
     this.#password = this.#validateAndCreatePassword(password);
   }
 
+  get password(): string {
+    return this.#password.value;
+  }
+
   get role(): UserRole {
     return this.#role;
   }
@@ -69,6 +78,10 @@ export class User extends BaseEntity {
 
   public passwordMatches(password: string): boolean {
     return this.#password.compare(password);
+  }
+
+  static fromData(data: UserData): User {
+    return new User(data);
   }
 
   #validateAndCreateName(name: string): Name {
@@ -93,7 +106,7 @@ export class User extends BaseEntity {
     return newPassword;
   }
 
-  #validate(props: UserProps): void {
+  #validate(props: UserData): void {
     this.#validator.validate(props, {
       name: Name.validate.bind(Name),
       email: Email.validate.bind(Email),

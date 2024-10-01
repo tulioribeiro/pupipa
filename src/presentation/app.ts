@@ -1,7 +1,10 @@
 import fastify from "fastify";
 import { ENV_DATA } from "../infrastructure/config";
+import { userRoutes } from "./routes/user";
 
 const app = fastify({ logger: true });
+
+app.register(userRoutes);
 
 const start = async () => {
   try {
