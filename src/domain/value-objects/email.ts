@@ -13,9 +13,9 @@ export class Email {
     const errors: string[] = [];
 
     if (!value) {
-      errors.push("Email cannot be empty");
+      errors.push("Email cannot be empty.");
     } else if (!this.#isValidEmail(value)) {
-      errors.push("Invalid email format");
+      errors.push("Invalid email format.");
     }
 
     return errors;

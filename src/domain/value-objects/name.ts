@@ -13,9 +13,9 @@ export class Name {
     const errors: string[] = [];
 
     if (!value) {
-      errors.push("Name cannot be empty");
+      errors.push("Name cannot be empty.");
     } else if (!this.#isValidFullName(value)) {
-      errors.push("Your name must be complete");
+      errors.push("Your name must be complete.");
     }
 
     return errors;

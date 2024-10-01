@@ -25,15 +25,13 @@ export class UserController {
   ): Promise<void> {
     try {
       const data = request.body as CreateUserRequestDTO;
-
       const userEntity = UserMapper.toEntity(data);
-
       const createdUser = await this.#createUserUseCase.execute(userEntity);
 
       reply.code(201).send(createdUser);
     } catch (error) {
       if (error instanceof EmailAlreadyExistsException) {
-        reply.code(409).send({ message: error.toResponse() });
+        reply.code(409).send(error.toResponse());
 
         return;
       }

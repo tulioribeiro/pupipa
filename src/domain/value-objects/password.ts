@@ -13,7 +13,7 @@ export class Password {
 
       return new Password(passwordHash);
     } catch {
-      throw new Error("Failed to hash password");
+      throw new Error("Failed to hash password.");
     }
   }
 
