@@ -4,7 +4,9 @@ import { userRoutes } from "./routes/user";
 
 const app = fastify({ logger: true });
 
-app.register(userRoutes);
+app.register(userRoutes, {
+  prefix: "/users",
+});
 
 const start = async () => {
   try {

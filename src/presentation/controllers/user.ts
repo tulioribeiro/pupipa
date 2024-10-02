@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CreateUserUseCase } from "../../application/use-cases/user/create-user";
-import { CreateUserRequestDTO } from "../../application/dtos/user/create-user";
 import { ValidationException } from "../../domain/exceptions/validation";
 import { EmailAlreadyExistsException } from "../../domain/exceptions/email-already-exists";
 import { UserMapper } from "../../shared/utils/user-mapper";
+import { CreateUserRequest } from "../../shared/interfaces/fastify/user";
 
 export class UserController {
   readonly #createUserUseCase: CreateUserUseCase;
@@ -13,22 +13,22 @@ export class UserController {
   }
 
   async createUser(
-    request: FastifyRequest,
+    request: FastifyRequest<CreateUserRequest>,
     reply: FastifyReply
   ): Promise<void> {
     return this.#handleCreateUser(request, reply);
   }
 
   async #handleCreateUser(
-    request: FastifyRequest,
+    request: FastifyRequest<CreateUserRequest>,
     reply: FastifyReply
   ): Promise<void> {
     try {
-      const data = request.body as CreateUserRequestDTO;
+      const data = request.body;
       const userEntity = UserMapper.toEntity(data);
       const createdUser = await this.#createUserUseCase.execute(userEntity);
 
-      reply.code(201).send(createdUser);
+      reply.code(201).send(UserMapper.toResponse(createdUser));
     } catch (error) {
       if (error instanceof EmailAlreadyExistsException) {
         reply.code(409).send(error.toResponse());

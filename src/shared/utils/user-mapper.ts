@@ -1,10 +1,9 @@
-import { UserDB } from "knex/types/tables";
+import { UserSchema } from "knex/types/tables";
 import {
   CreateUserRequestDTO,
   CreateUserResponseDTO,
-} from "../../application/dtos/user/create-user";
+} from "../dtos/user/create-user";
 import { User, UserData } from "../../domain/entities/user";
-import { UserRole } from "../../domain/enums/role";
 
 export const UserMapper = {
   toResponse(user: User): CreateUserResponseDTO {
@@ -25,13 +24,13 @@ export const UserMapper = {
     });
   },
 
-  fromDB(raw: UserDB): User {
+  fromDB(raw: UserSchema): User {
     const userData: UserData = {
       id: raw.id,
       name: raw.name,
       email: raw.email,
       password: raw.password_hash,
-      role: raw.role as UserRole, // @FIXME: This is a workaround for the type mismatch
+      role: raw.role,
       validatedEmail: raw.validated,
       createdAt: new Date(raw.created_at),
       updatedAt: raw.updated_at ? new Date(raw.updated_at) : undefined,
