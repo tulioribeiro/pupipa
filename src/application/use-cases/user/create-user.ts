@@ -3,15 +3,19 @@ import { EmailAlreadyExistsException } from "../../../domain/exceptions/email-al
 import { PostgresUserRepository } from "../../../infrastructure/repositories/user/postgres-user-repository";
 
 export class CreateUserUseCase {
-  constructor(private userRepository: PostgresUserRepository) {}
+  #userRepository: PostgresUserRepository;
+
+  constructor(userRepository: PostgresUserRepository) {
+    this.#userRepository = userRepository;
+  }
 
   async execute(data: User): Promise<User> {
-    const existingUser = await this.userRepository.findByEmail(data.email);
+    const existingUser = await this.#userRepository.findByEmail(data.email);
 
     if (existingUser) {
       throw new EmailAlreadyExistsException();
     }
 
-    return await this.userRepository.create(data);
+    return await this.#userRepository.create(data);
   }
 }

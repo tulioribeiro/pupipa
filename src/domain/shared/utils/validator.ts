@@ -1,3 +1,5 @@
+import { capitalizeFirstLetter } from "./capitalize-first-letter";
+
 type ValidatorFunction<T> = (value: T) => string[];
 
 export class Validator<T> {
@@ -14,6 +16,10 @@ export class Validator<T> {
     const errors: Record<string, string[]> = {};
 
     for (const key in validators) {
+      if (props[key] === undefined) {
+        errors[key] = [`${capitalizeFirstLetter(key)} is required.`];
+      }
+
       const validate = validators[key];
       const propValue = props[key];
 

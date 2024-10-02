@@ -4,11 +4,19 @@ interface ToResponse {
   details: Record<string, string[]>;
 }
 
-export class BaseException extends Error {
-  public readonly details: Record<string, string[]>;
+interface BaseExceptionProps {
+  message?: string;
+  statusCode?: number;
+  details?: Record<string, string[]>;
+}
 
-  constructor(message: string, details?: Record<string, string[]>) {
-    super(message);
+class BaseException extends Error {
+  public readonly details: Record<string, string[]>;
+  public readonly statusCode: number;
+
+  constructor({ message, details, statusCode }: BaseExceptionProps) {
+    super(message ?? "Internal server error. Please try again later.");
+    this.statusCode = statusCode ?? 500;
     this.name = this.constructor.name;
     this.details = details ?? {};
   }
@@ -21,3 +29,6 @@ export class BaseException extends Error {
     };
   }
 }
+
+export { BaseException };
+export type { ToResponse };
