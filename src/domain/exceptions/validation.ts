@@ -1,9 +1,15 @@
 import { BaseException } from "./base";
 
+interface ValidationExceptionProps {
+  errors?: Record<string, string[]>;
+  statusCode?: number;
+  message?: string;
+}
+
 export class ValidationException extends BaseException {
-  constructor(errors: Record<string, string[]>, statusCode?: number) {
+  constructor({ errors, statusCode, message }: ValidationExceptionProps) {
     super({
-      message: "Invalid input data.",
+      message: message ?? "Invalid input data.",
       details: errors,
       statusCode: statusCode ?? 400,
     });

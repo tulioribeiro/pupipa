@@ -1,9 +1,6 @@
-import { CreateUserRequestDTO } from "../../dtos/user/create-user";
+import { BaseFastifyRequest } from "./base";
+import { CreateUserDTO } from "../../dtos/user/create-user";
 
-interface BaseRequest<T> {
-  Body: T;
-}
-
-type CreateUserRequest = BaseRequest<CreateUserRequestDTO>;
+type CreateUserRequest = BaseFastifyRequest<CreateUserDTO>;
 
 export { CreateUserRequest };

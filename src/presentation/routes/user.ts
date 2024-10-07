@@ -1,16 +1,25 @@
 import { FastifyInstance } from "fastify";
 import { PostgresUserRepository } from "../../infrastructure/repositories/user/postgres-user-repository";
-import { CreateUserUseCase } from "../../application/use-cases/user/create-user";
+import { CreateUserUseCase } from "../../application/use-cases/user/create";
+import { FetchUserProfileUserCase } from "../../application/use-cases/user/fetch-profile";
 import { UserController } from "../controllers/user";
 import { CreateUserRequest } from "../../shared/interfaces/fastify/user";
 import { validateRequestBody } from "../middlewares/validate-request-body";
 
-export async function userRoutes(fastify: FastifyInstance) {
+export async function userRoutes(app: FastifyInstance) {
   const userRepository = new PostgresUserRepository();
   const createUserUseCase = new CreateUserUseCase(userRepository);
-  const userController = new UserController(createUserUseCase);
+  const fetchUserProfileUseCase = new FetchUserProfileUserCase(userRepository);
+  const userController = new UserController(
+    createUserUseCase,
+    fetchUserProfileUseCase
+  );
 
-  fastify.post<CreateUserRequest>(
+  app.get("/", async (request, reply) => {
+    await userController.fetchUserProfile(request, reply);
+  });
+
+  app.post<CreateUserRequest>(
     "/",
     { preHandler: validateRequestBody },
     async (request, reply) => {

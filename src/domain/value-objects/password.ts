@@ -3,8 +3,8 @@ import { compareSync, hashSync } from "bcrypt";
 export class Password {
   #value: string;
 
-  constructor(value: string) {
-    this.#value = value;
+  constructor(password: string, isHashed = false) {
+    this.#value = isHashed ? password : hashSync(password, 10);
   }
 
   static create(password: string): Password {
@@ -15,6 +15,10 @@ export class Password {
     } catch {
       throw new Error("Failed to hash password.");
     }
+  }
+
+  static fromHash(hash: string): Password {
+    return new Password(hash, true);
   }
 
   static validate(plainTextPassword: string): string[] {
@@ -33,7 +37,7 @@ export class Password {
     return this.#value;
   }
 
-  compare(plainTextPassword: string): boolean {
+  equals(plainTextPassword: string): boolean {
     return compareSync(plainTextPassword, this.#value);
   }
 }

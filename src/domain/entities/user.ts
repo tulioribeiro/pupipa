@@ -3,7 +3,7 @@ import { Email } from "../value-objects/email";
 import { Name } from "../value-objects/name";
 import { Password } from "../value-objects/password";
 import { ValidationException } from "../exceptions/validation";
-import { UserRole } from "../enums/role";
+import { UserRole } from "../enums/user-role";
 import { Validator } from "../shared/utils/validator";
 
 export interface UserData {
@@ -24,18 +24,19 @@ export class User extends BaseEntity {
   #role: UserRole;
   #validatedEmail: boolean;
   #validator = new Validator<UserData>(ValidationException);
-  constructor(props: UserData) {
-    super();
+
+  constructor(props: UserData, isPasswordHashed = false) {
+    super(props.id, props.createdAt, props.updatedAt);
 
     this.#validate(props);
 
-    const { name, email, password } = props;
+    const { name, email, password, role, validatedEmail } = props;
 
     this.#name = new Name(name);
     this.#email = new Email(email);
-    this.#password = Password.create(password);
-    this.#role = UserRole.User;
-    this.#validatedEmail = false;
+    this.#password = new Password(password, isPasswordHashed);
+    this.#role = role ?? UserRole.User;
+    this.#validatedEmail = validatedEmail ?? false;
   }
 
   get name(): string {
@@ -77,11 +78,7 @@ export class User extends BaseEntity {
   }
 
   public passwordMatches(password: string): boolean {
-    return this.#password.compare(password);
-  }
-
-  static fromData(data: UserData): User {
-    return new User(data);
+    return this.#password.equals(password);
   }
 
   #validateAndCreateName(name: string): Name {
@@ -94,14 +91,14 @@ export class User extends BaseEntity {
   }
 
   #validateAndCreatePassword(password: string): Password {
-    const newPassword = new Password(password);
-
     this.#validator.validateSingle(
       "password",
       password,
       Password.validate.bind(Password)
     );
     this._updatedTimestamp();
+
+    const newPassword = Password.create(password);
 
     return newPassword;
   }

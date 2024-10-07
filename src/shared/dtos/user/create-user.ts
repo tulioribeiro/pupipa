@@ -1,15 +1,17 @@
-interface CreateUserRequestDTO {
+interface CreateUserDTO {
   name: string;
   email: string;
   password: string;
 }
 
-interface CreateUserResponseDTO {
+interface UserViewModelDTO {
   id: string;
   name: string;
   email: string;
-  validatedEmail: boolean;
+  role: string;
+  validated: boolean;
   createdAt: Date;
+  updatedAt: Date | null;
 }
 
-export { CreateUserRequestDTO, CreateUserResponseDTO };
+export type { CreateUserDTO, UserViewModelDTO };

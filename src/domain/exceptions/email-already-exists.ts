@@ -2,6 +2,9 @@ import { ValidationException } from "./validation";
 
 export class EmailAlreadyExistsException extends ValidationException {
   constructor() {
-    super({ email: ["Email already exists."] }, 409);
+    super({
+      errors: { email: ["Email already exists."] },
+      statusCode: 409,
+    });
   }
 }

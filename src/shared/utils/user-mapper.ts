@@ -1,43 +1,49 @@
-import { UserSchema } from "knex/types/tables";
-import {
-  CreateUserRequestDTO,
-  CreateUserResponseDTO,
-} from "../dtos/user/create-user";
-import { User, UserData } from "../../domain/entities/user";
+import { User } from "../../domain/entities/user";
+import { UserViewModelDTO } from "../dtos/user/create-user";
+import { UserSchema } from "../../infrastructure/repositories/user/user-repository";
+import { UserRole } from "../../domain/enums/user-role";
 
 export const UserMapper = {
-  toResponse(user: User): CreateUserResponseDTO {
+  toSchema(user: User): UserSchema {
     return {
       id: user.id,
       name: user.name,
       email: user.email,
+      password_hash: user.password,
+      role: user.role,
+      validated: user.validatedEmail,
+      created_at: user.createdAt,
+      updated_at: user.updatedAt ?? null,
+    };
+  },
+
+  toUserViewModel(user: User): UserViewModelDTO {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      validated: user.validatedEmail,
       createdAt: user.createdAt,
-      validatedEmail: user.validatedEmail,
+      updatedAt: user.updatedAt,
     };
   },
 
-  toEntity(dto: CreateUserRequestDTO): User {
-    return new User({
-      name: dto.name,
-      email: dto.email,
-      password: dto.password,
-    });
-  },
+  toEntity(user: UserSchema): User {
+    const isPasswordHashed = true;
 
-  fromDB(raw: UserSchema): User {
-    const userData: UserData = {
-      id: raw.id,
-      name: raw.name,
-      email: raw.email,
-      password: raw.password_hash,
-      role: raw.role,
-      validatedEmail: raw.validated,
-      createdAt: new Date(raw.created_at),
-      updatedAt: raw.updated_at ? new Date(raw.updated_at) : undefined,
-    };
-
-    console.log(userData.password);
-
-    return User.fromData(userData);
+    return new User(
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        password: user.password_hash,
+        role: user.role as UserRole,
+        validatedEmail: user.validated,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at ?? undefined,
+      },
+      isPasswordHashed
+    );
   },
 };

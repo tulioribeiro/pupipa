@@ -3,12 +3,12 @@ import { UUID } from "../value-objects/uuid";
 export class BaseEntity {
   readonly #id: UUID;
   #createdAt: Date;
-  #updatedAt?: Date;
+  #updatedAt: Date | null;
 
-  protected constructor() {
-    this.#id = new UUID();
-    this.#createdAt = new Date();
-    this.#updatedAt = undefined;
+  protected constructor(id?: string, createdAt?: Date, updatedAt?: Date) {
+    this.#id = new UUID(id);
+    this.#createdAt = createdAt ?? new Date();
+    this.#updatedAt = updatedAt ?? null;
   }
 
   get id(): string {
@@ -19,7 +19,7 @@ export class BaseEntity {
     return this.#createdAt;
   }
 
-  get updatedAt(): Date | undefined {
+  get updatedAt(): Date | null {
     return this.#updatedAt;
   }
 

@@ -1,46 +1,42 @@
-import { User } from "../../../domain/entities/user";
 import { EmailAlreadyExistsException } from "../../../domain/exceptions/email-already-exists";
-import { UserRepository } from "../../../domain/repositories/user";
-import { UserMapper } from "../../../shared/utils/user-mapper";
+import { UserRepository, UserSchema } from "./user-repository";
 import { databaseInstance } from "../../database/knexfile";
 
 export class PostgresUserRepository implements UserRepository {
-  async findById(id: string): Promise<User | null> {
-    const user = await databaseInstance<User>("users").where({ id }).first();
+  async findById(id: string): Promise<UserSchema | null> {
+    const user = await databaseInstance<UserSchema>("users")
+      .where({ id })
+      .first();
 
     return user ?? null;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const user = await databaseInstance<User>("users").where({ email }).first();
+  async findByEmail(email: string): Promise<UserSchema | null> {
+    const user = await databaseInstance<UserSchema>("users")
+      .where({ email })
+      .first();
 
     return user ?? null;
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await databaseInstance<User>("users").select();
+  async findAll(): Promise<UserSchema[]> {
+    const users = await databaseInstance<UserSchema>("users").select();
 
     return users;
   }
 
-  async create(user: User): Promise<User> {
+  async create(user: UserSchema): Promise<UserSchema> {
     const userAlreadyExists = await this.findByEmail(user.email);
 
     if (userAlreadyExists) {
       throw new EmailAlreadyExistsException();
     }
 
-    const [createdUser] = await databaseInstance("users")
-      .insert({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        password_hash: user.password,
-      })
+    const [createdUser] = await databaseInstance<UserSchema>("users")
+      .insert(user)
       .returning("*");
 
-    return UserMapper.fromDB(createdUser);
+    return createdUser;
   }
 
   async delete(id: string): Promise<void> {
